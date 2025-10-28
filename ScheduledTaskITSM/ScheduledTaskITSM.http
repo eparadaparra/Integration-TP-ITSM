@@ -1,0 +1,6 @@
+@ScheduledTaskITSM_HostAddress = http://localhost:5236
+
+GET {{ScheduledTaskITSM_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34616.47
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "webhookITSM", "webhookITSM\webhookITSM.csproj", "{F479167D-2390-4873-9CD4-254BEF6857B8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthToken", "AuthToken\AuthToken.csproj", "{174D18E1-0111-49EE-8C23-AC4E92CB9863}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tasksAction", "tasksAction\tasksAction.csproj", "{C76FDD84-3C7D-41C0-AC3C-E25DD73B07C4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScheduledTaskITSM", "ScheduledTaskITSM\ScheduledTaskITSM.csproj", "{F2A8CFC1-A9E9-4809-909E-D12AE3AC9633}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WSItsmToTp", "WSItsmToTp\WSItsmToTp.csproj", "{9CEEB3C3-8E09-49AD-AD7C-310E30FFE496}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfService1", "WcfService1\WcfService1.csproj", "{5AA631CC-6F0D-4903-B12D-0B934AAE5A8D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F479167D-2390-4873-9CD4-254BEF6857B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F479167D-2390-4873-9CD4-254BEF6857B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F479167D-2390-4873-9CD4-254BEF6857B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F479167D-2390-4873-9CD4-254BEF6857B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{174D18E1-0111-49EE-8C23-AC4E92CB9863}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{174D18E1-0111-49EE-8C23-AC4E92CB9863}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{174D18E1-0111-49EE-8C23-AC4E92CB9863}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{174D18E1-0111-49EE-8C23-AC4E92CB9863}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C76FDD84-3C7D-41C0-AC3C-E25DD73B07C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C76FDD84-3C7D-41C0-AC3C-E25DD73B07C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C76FDD84-3C7D-41C0-AC3C-E25DD73B07C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C76FDD84-3C7D-41C0-AC3C-E25DD73B07C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2A8CFC1-A9E9-4809-909E-D12AE3AC9633}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2A8CFC1-A9E9-4809-909E-D12AE3AC9633}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2A8CFC1-A9E9-4809-909E-D12AE3AC9633}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2A8CFC1-A9E9-4809-909E-D12AE3AC9633}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CEEB3C3-8E09-49AD-AD7C-310E30FFE496}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CEEB3C3-8E09-49AD-AD7C-310E30FFE496}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CEEB3C3-8E09-49AD-AD7C-310E30FFE496}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CEEB3C3-8E09-49AD-AD7C-310E30FFE496}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AA631CC-6F0D-4903-B12D-0B934AAE5A8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AA631CC-6F0D-4903-B12D-0B934AAE5A8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AA631CC-6F0D-4903-B12D-0B934AAE5A8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AA631CC-6F0D-4903-B12D-0B934AAE5A8D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7ED7DCE5-A1FC-4D12-A4D8-2A8C96EAEAD0}
+	EndGlobalSection
+EndGlobal
