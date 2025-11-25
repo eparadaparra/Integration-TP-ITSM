@@ -21,18 +21,16 @@ namespace webhookITSM.Controllers
         #region Webhook ITSM
         [HttpPost]
         [Route("webhookITSM")]
-        public async Task<IActionResult> ReceiveResponse() //[FromBody]TPActivity upActivity
+        public async Task<IActionResult> ReceiveResponse()
         {
             bool response = false;
             string requestBody = await new StreamReader(Request.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject(requestBody);
 
-            //System.Console.WriteLine($"Webhook received: \n\n {JsonConvert.SerializeObject(data, Formatting.Indented)}");
-
             try
             {
                 response = await _services.WHTaskITSM(data);
-                
+
                 if (response)
                 {
                     return StatusCode(StatusCodes.Status200OK, new { status = StatusCodes.Status200OK, message = $"Tarea Actualizada" });

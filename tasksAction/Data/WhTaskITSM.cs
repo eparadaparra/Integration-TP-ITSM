@@ -1,8 +1,9 @@
-﻿using System.Data;
-using System.Data.SqlClient;
-using System.Net.Mail;
-using Microsoft.AspNetCore.Hosting.Server;
+﻿using Microsoft.AspNetCore.Hosting.Server;
 using Newtonsoft.Json.Linq;
+using System.Data;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.Net.Mail;
 using tasksAction.Conn;
 
 namespace tasksAction.Data
@@ -12,7 +13,6 @@ namespace tasksAction.Data
         Connection cn = new Connection();
 
         #region UpTaskExecon SP_TrackPoint_UpTaskIvanti
-
         public async Task UpTask(JToken data, string server)
         {
 
@@ -226,5 +226,106 @@ namespace tasksAction.Data
             }
         }
         #endregion
+
+        public async Task UpTrasladoRetorno(JToken data, string server)
+        {
+            SqlConnection sql = new SqlConnection();
+            string spName = "EXsp_TrackPoint_TrasladoRegreso";
+            
+            sql = new SqlConnection(cn.SqlCommBDE());
+
+            List<string> lstUp = new List<string>();
+            string nombreOwner = Convert.ToString(data["user_name"]?.ToString() is null ? DBNull.Value : data["user_name"].ToString());
+            string activityName = data["modules_config"]!["name"]!.ToString();
+            string idEvento = Convert.ToString(data["status"]?.ToString() is null ? DBNull.Value : data["status"].ToString());
+
+            string status     = Convert.ToString(data["statusInfo"]?.ToString() is null ? DBNull.Value : data["statusInfo"]?["txt"]?.ToString() is null ? DBNull.Value : data["statusInfo"]?["txt"]?.ToString());
+            string firebaseId = Convert.ToString(data["firebase_id"]?.ToString() is null ? DBNull.Value : data["firebase_id"]?.ToString());
+            string user       = Convert.ToString(data["scheduled_user_email"]?.ToString() is null ? DBNull.Value : new MailAddress(data["scheduled_user_email"]?.ToString()).User);
+            
+            string inicioFechaTraslado = Convert.ToString( data["start_date_utc"] is null
+                ? DBNull.Value
+                : utcToDatetime.castUtcDatetime(Convert.ToInt32(data["start_date_utc"]?["_seconds"]), Convert.ToInt32(data["start_date_utc"]?["_nanoseconds"]))
+            );
+            string inicioDireccion = Convert.ToString(data["address_checkIn"]?.ToString() is null ? DBNull.Value : data["address_checkIn"]?.ToString());
+            string inicioLat       = Convert.ToString(data["latitude"]?.ToString() is null ? DBNull.Value : data["latitude"]?.ToString());
+            string inicioLon       = Convert.ToString(data["longitude"]?.ToString() is null ? DBNull.Value : data["longitude"]?.ToString());
+            string inicioGeoHash   = Convert.ToString(data["geolocation"]?["geohash"]?.ToString() is null ? DBNull.Value : data["geolocation"]?["geohash"]?.ToString());
+
+            string finFechaTraslado = null;
+            string finDireccion     = null;
+            string finLat           = null;
+            string finLon           = null;
+            string finGeoHash       = null;
+
+            DateTime fecha = DateTime.ParseExact(inicioFechaTraslado, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+            if (data["elements"] is not null)
+            {
+                foreach (var element in data["elements"])
+                {
+                    if (element["title"].ToString().ToUpper() == "Destino".ToUpper())
+                    {
+                        finFechaTraslado = Convert.ToString( element["last_modified_at_utc"] is null
+                            ? DBNull.Value
+                            : utcToDatetime.castUtcDatetime(Convert.ToInt32(element["last_modified_at_utc"]?["_seconds"]), Convert.ToInt32(element["last_modified_at_utc"]?["_nanoseconds"]))
+                        );
+
+                        if (element["info"] is not null)
+                        {
+                            finDireccion = Convert.ToString(element["info"]?["address"]?.ToString() is null ? DBNull.Value : element["info"]?["address"]?.ToString());
+                            finLat       = Convert.ToString(element["info"]?["latitude"]?.ToString() is null ? DBNull.Value : element["info"]?["latitude"]?.ToString());
+                            finLon       = Convert.ToString(element["info"]?["longitude"]?.ToString() is null ? DBNull.Value : element["info"]?["longitude"]?.ToString());
+                            finGeoHash   = Convert.ToString(element["info"]?["geolocation"]?["geohash"]?.ToString() is null ? DBNull.Value : element["info"]?["geolocation"]?["geohash"]?.ToString());
+                        }
+                    }
+                }
+            }
+
+            lstUp = Logs.SetUpParameters(false, idEvento, nombreOwner, activityName, status, "", firebaseId, finLat ?? "", finLon ?? "", "", "", "", "", "", inicioFechaTraslado, finFechaTraslado, "", "", "");
+
+            try
+            {
+                using (sql)
+                {
+                    using (var cmd = new SqlCommand(spName, sql))
+                    {
+                        await sql.OpenAsync();
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@Status", SqlDbType.NVarChar, 50).Value = (object)status ?? DBNull.Value;
+                        cmd.Parameters.Add("@FirebaseId", SqlDbType.NVarChar, 50).Value = (object)firebaseId ?? DBNull.Value;
+                        cmd.Parameters.Add("@Usuario", SqlDbType.NVarChar, 50).Value = (object)user ?? DBNull.Value;
+
+                        cmd.Parameters.Add("@InicioFechatraslado", SqlDbType.NVarChar, 50).Value = (object)inicioFechaTraslado ?? DBNull.Value;
+                        cmd.Parameters.Add("@InicioDireccion", SqlDbType.NVarChar, -1).Value = (object)inicioDireccion ?? DBNull.Value;
+                        cmd.Parameters.Add("@InicioLat", SqlDbType.NVarChar, 50).Value = (object)inicioLat ?? DBNull.Value;
+                        cmd.Parameters.Add("@InicioLon", SqlDbType.NVarChar, 50).Value = (object)inicioLon ?? DBNull.Value;
+                        cmd.Parameters.Add("@InicioGeoHash", SqlDbType.NVarChar, 50).Value = (object)inicioGeoHash ?? DBNull.Value;
+
+                        cmd.Parameters.Add("@FinFechaTraslado", SqlDbType.NVarChar, 50).Value = (object)finFechaTraslado ?? DBNull.Value;
+                        cmd.Parameters.Add("@FinDireccion", SqlDbType.NVarChar, -1).Value = (object)finDireccion ?? DBNull.Value;
+                        cmd.Parameters.Add("@FinLat", SqlDbType.NVarChar, 50).Value = (object)finLat ?? DBNull.Value; // Valor por defecto para decimal
+                        cmd.Parameters.Add("@FinLon", SqlDbType.NVarChar, 50).Value = (object)finLon ?? DBNull.Value; // Valor por defecto para decimal
+                        cmd.Parameters.Add("@FinGeoHash", SqlDbType.NVarChar, 50).Value = (object)finGeoHash ?? DBNull.Value;
+
+                        await cmd.ExecuteNonQueryAsync();
+                        await sql.CloseAsync();
+                    }
+                }
+
+                string stateN = (idEvento == "2") ? "Creada" : "Actualizada";
+
+                new Logs().WriteLog($"Comentarios Tarea {fecha.ToString("yyMMdd")}_{user}: 0{idEvento} {status} - {stateN} Satisfactoriamente", lstUp, idEvento);
+
+            }
+            catch (Exception ex)
+            {
+                new Logs().WriteLog($"Exception Tarea {fecha.ToString("yyMMdd")}_{user}: 0{idEvento} {status} - Ocurrió un Problema al Actualizar Estatus\n\t - " + StatusCodes.Status500InternalServerError + " " + ex.Message, []);
+            }
+
+
+        }
+
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
+using System.Net.Mail;
 using System.Text;
 using tasksAction.Models;
 using static System.Net.Mime.MediaTypeNames;
@@ -145,27 +147,27 @@ namespace tasksAction.Conn
                     break;
                 case "2":
                     lstUp.Add($"FirebaseId: {idTaskTP}");
-                    lstUp.Add($"RecId: {recIdTask}");
+                    if (recIdTask != "") { lstUp.Add($"RecId: {recIdTask}"); };
                     lstUp.Add($"TipoTarea: {tipoTarea}");
                     lstUp.Add($"UsuarioAsignado: {nombreOwner}");
-                    lstUp.Add($"FechaProgramada: {fechaProgramada}");
+                    if (fechaProgramada != "") { lstUp.Add($"FechaProgramada: {fechaProgramada}"); };
                     lstUp.Add($"FechaTraslado: {fechaInicio}");
                     break;
                 case "3":
                     lstUp.Add($"FirebaseId: {idTaskTP}");
-                    lstUp.Add($"RecId: {recIdTask}");
+                    if (recIdTask != "") { lstUp.Add($"RecId: {recIdTask}"); };
                     lstUp.Add($"TipoTarea: {tipoTarea}");
                     lstUp.Add($"UsuarioAsignado: {nombreOwner}");
-                    lstUp.Add($"FechaProgramada: {fechaProgramada}");
+                    if (fechaProgramada != "") { lstUp.Add($"FechaProgramada: {fechaProgramada}"); };
                     lstUp.Add($"FechaTraslado: {fechaInicio}");
-                    lstUp.Add($"FechaInicio: {fechaLlegadaSitio}");
+                    if (fechaLlegadaSitio != "") { lstUp.Add($"FechaInicio: {fechaLlegadaSitio}"); };
                     lstUp.Add($"FechaFin: {fechaFin}");
                     lstUp.Add($"LatitudSitio: {cooLat}");
                     lstUp.Add($"LongitudSitio: {cooLong}");
                     if (isCC) { lstUp.Add($"CodigoCierre: {codigoCierre}"); };
                     if (isCC) { lstUp.Add($"AgenteCC: {quienProporcionoCierre}"); };
-                    lstUp.Add($"Resolucion: {subStatusTask}");
-                    lstUp.Add($"ComentariosCC: {comentariosCierre}");
+                    if (subStatusTask != "") { lstUp.Add($"Resolucion: {subStatusTask}"); };
+                    if (comentariosCierre != "") { lstUp.Add($"ComentariosCC: {comentariosCierre}"); };
                     break;
                 case "4":
                     lstUp.Add($"FirebaseId: {idTaskTP}");
@@ -238,10 +240,15 @@ namespace tasksAction.Conn
         public void CreaJsonWH(JToken json)
         {
             JToken data = json["data"];
+            DateTime fecha = (data["modules_config"]?["name"]?.ToString() == "Traslado regreso")
+                ? DateTime.ParseExact(data["start_date"].ToString(), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
+                : DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
 
-            // ASIGNA NOMBRE DE ARCHIVO JSON
-            string nameFile = String.Concat(data["preload"]?[0]?["frmAssignmentId"]?.ToString(), " - 0",
-                 data["status"]?.ToString(), " ", Logs.SetStatusJson(data["status"]?.ToString(), data["statusInfo"]?["txt"]?.ToString()) );
+            string user = new MailAddress(Convert.ToString(data["scheduled_user_email"].ToString())).User;
+
+            string nameFile = (data["modules_config"]?["name"]?.ToString() == "Traslado regreso")
+                ? String.Concat(fecha.ToString("yyMMddHHmm"), "_", user, " - 0", data["status"]?.ToString(), " ", Logs.SetStatusJson(data["status"]?.ToString(), data["statusInfo"]?["txt"]?.ToString()))
+                : String.Concat(data["preload"]?[0]?["frmAssignmentId"]?.ToString(), " - 0", data["status"]?.ToString(), " ", Logs.SetStatusJson(data["status"]?.ToString(), data["statusInfo"]?["txt"]?.ToString()) );
 
             // MANDA A LLAMAR FUNCION QUE CREA JSON
             SaveJson(JsonConvert.SerializeObject(json, Formatting.Indented), nameFile);

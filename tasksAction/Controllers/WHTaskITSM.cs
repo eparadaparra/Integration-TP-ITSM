@@ -27,12 +27,22 @@ namespace tasksAction.Controllers
             JToken data = json["data"];
             string serverName = Convert.ToString(data["preload"]?[0]?["frmServer"]?.ToString() is null ? DBNull.Value : data["preload"]?[0]?["frmServer"]?.ToString());
 
+            string activityName = data["modules_config"]!["name"]!.ToString();
+
             new FileService().CreaJsonWH(json);
             
             try
             {
                 WhTaskITSM fn = new WhTaskITSM();
-                await fn.UpTask(data, serverName);
+
+                if ((activityName == "Traslado regreso"))
+                {
+                    await fn.UpTrasladoRetorno(data, serverName);
+                }
+                else
+                {
+                    await fn.UpTask(data, serverName);
+                }
 
                 return StatusCode(StatusCodes.Status200OK, new { status = StatusCodes.Status200OK, message = "Actualizada Satisfactoriamente" });
             }
